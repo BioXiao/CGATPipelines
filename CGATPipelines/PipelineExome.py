@@ -601,12 +601,7 @@ def extractEBioinfo(eBio_ids, vcfs, outfile):
 
     genes = set()
 
-    n = 0
     for vcf in vcfs:
-        if n > 0:
-            break
-        else:
-            n += 1
         infile = VCF.VCFFile(IOTools.openFile(vcf))
         for vcf_entry in infile:
             # assumes all vcf entries without "REJECT" are "PASS"
@@ -615,6 +610,11 @@ def extractEBioinfo(eBio_ids, vcfs, outfile):
                 for entry in info_entries:
                     if "SNPEFF_GENE_NAME" in entry:
                         genes.update((entry.split("=")[1],))
+                        continue
+
+    out2 = IOTools.openFile("%s_genes_out.tsv" % outfile, "w")
+    out2.write("\n".join(list(genes)))
+    out2.close()
 
     eBio_ids = IOTools.openFile(eBio_ids, "r")
 
@@ -636,6 +636,7 @@ def extractEBioinfo(eBio_ids, vcfs, outfile):
             if df.shape[0] != 0:
                 tissue_counts[tissue][gene]["total"] += df.shape[1]-2
                 tissue_counts[tissue][gene]["mutations"] += int(df.count(1))-1
+
 
     out = IOTools.openFile(outfile, "w")
 
