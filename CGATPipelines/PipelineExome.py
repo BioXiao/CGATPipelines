@@ -612,10 +612,6 @@ def extractEBioinfo(eBio_ids, vcfs, outfile):
                         genes.update((entry.split("=")[1],))
                         continue
 
-    out2 = IOTools.openFile("%s_genes_out.tsv" % outfile, "w")
-    out2.write("\n".join(list(genes)))
-    out2.close()
-
     eBio_ids = IOTools.openFile(eBio_ids, "r")
 
     tissue_counts = collections.defaultdict(
@@ -637,7 +633,6 @@ def extractEBioinfo(eBio_ids, vcfs, outfile):
                 tissue_counts[tissue][gene]["total"] += df.shape[1]-2
                 tissue_counts[tissue][gene]["mutations"] += int(df.count(1))-1
 
-
     out = IOTools.openFile(outfile, "w")
 
     tissues = tissue_counts.keys()
@@ -651,7 +646,7 @@ def extractEBioinfo(eBio_ids, vcfs, outfile):
             total = tissue_counts[tissue][gene]["total"]
             mutations = tissue_counts[tissue][gene]["mutations"]
             print "total: ", total, "mutations: ", mutations
-            freq_values.append(np.divide(float(mutations), total))
+            freq_values.append(round(np.divide(float(mutations), total),4))
 
         out.write("%s\t%s\n" % (gene, "\t".join(map(str, freq_values))))
 
